@@ -41,6 +41,9 @@ Rules:
 - action_type must be exactly "probe" or "recovery".
 - target must exactly match one service name from the observation.
 - reasoning must be a short plain-text explanation.
+- Do not repeat recovery on the same service unless the latest observation shows it is still a top-priority problem.
+- After any recovery, reassess the system before recovering that same service again.
+- If multiple services look suspicious, prefer probing a new suspicious service over repeating the same action.
 
 Respond with JSON only in this form:
 {

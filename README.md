@@ -210,8 +210,8 @@ openenv validate
 ```bash
 # Set required credentials
 export HF_TOKEN=your_hf_token_here
-export API_BASE_URL=https://api-inference.huggingface.co/v1
-export MODEL_NAME=Qwen/Qwen2.5-7B-Instruct
+export API_BASE_URL=https://router.huggingface.co/v1
+export MODEL_NAME=Qwen/Qwen2.5-72B-Instruct
 
 # Run a single task
 python inference.py --task task_1
@@ -227,6 +227,19 @@ python inference.py --all-tasks --seed 42 --env-url http://localhost:8000
 
 Run `inference.py --all-tasks --seed 42` with a real model endpoint to record baseline scores for submission. The current script emits benchmark-style `[START]`, `[STEP]`, and `[END]` lines for each task.
 
+Validated baseline with `Qwen/Qwen2.5-72B-Instruct` against the deployed HF Space:
+
+| Task | Score | Steps | Result |
+|------|-------|-------|--------|
+| Task 1 | 0.89 | 2 | Pass |
+| Task 2 | 0.99 | 4 | Pass |
+| Task 3 | 0.56 | 14 | Pass |
+
+Passing thresholds:
+- Task 1: `0.70`
+- Task 2: `0.55`
+- Task 3: `0.40`
+
 ## Hugging Face Spaces Deployment
 
 ```bash
@@ -241,8 +254,8 @@ To deploy on Hugging Face Spaces:
 2. Upload this repository contents to the Space.
 3. Ensure the Space keeps port `8000` exposed.
 4. Add any runtime secrets you need, such as `HF_TOKEN`, in the Space settings.
-5. Let Hugging Face build the image from the root [`Dockerfile`](/Users/shreyasjoshi/funprojs/mph/recovery_env/it_fault_env/Dockerfile).
-6. After the build completes, verify [`/health`](/Users/shreyasjoshi/funprojs/mph/recovery_env/it_fault_env/server/app.py#L81) and run `openenv validate` locally before submission.
+5. Let Hugging Face build the image from the root [`Dockerfile`](/Users/shreyasjoshi/funprojs/mph/it_fault_env/Dockerfile).
+6. After the build completes, verify the root endpoint, `/health`, and `/tasks`, then run `openenv validate` locally before submission.
 
 ## Extending the Environment
 
@@ -318,5 +331,7 @@ it_fault_env/
 ```
 
 ## License
+
+This project is licensed under the BSD 3-Clause License. See [`LICENSE.md`](/Users/shreyasjoshi/funprojs/mph/it_fault_env/LICENSE.md).
 
 BSD-style license (see LICENSE file).
