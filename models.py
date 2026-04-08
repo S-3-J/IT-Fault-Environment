@@ -15,6 +15,7 @@ class ActionType(str, Enum):
 
     Members:
         probe: Gather diagnostic information about a service
+        recovery: Generic recovery action used by this environment
         restart: Restart a service (recovery action)
         isolate: Isolate a service from the topology (recovery action)
         patch: Apply a patch to a service (recovery action)
@@ -22,6 +23,7 @@ class ActionType(str, Enum):
     """
 
     probe = "probe"
+    recovery = "recovery"
     restart = "restart"
     isolate = "isolate"
     patch = "patch"
