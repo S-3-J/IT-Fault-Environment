@@ -160,7 +160,8 @@ class ITFaultEnv:
 
                 # Apply initial health decay
                 node = self.graph.nodes[root_node_id]["service"]
-                node.health = max(0.0, node.health - fault.health_decay * 2)
+                initial_decay = max(0.25, fault.health_decay * 4)
+                node.health = max(0.0, node.health - initial_decay)
                 node.active_faults.append(fault_name)
                 node.status = health_to_status(node.health)
 
@@ -277,6 +278,27 @@ class ITFaultEnv:
 
         return list(rng.choice(nodes, size=n_masked, replace=False))
 
+    def _system_recovered(self) -> bool:
+        """
+        Determine whether the incident has actually been resolved.
+
+        Recovery requires both strong overall health and no remaining active faults.
+        This prevents probe-only episodes from terminating when the initial fault
+        happened to be too mild.
+        """
+        if self.graph is None:
+            return False
+
+        all_healthy = all(
+            node_data["service"].health > 0.85
+            for node_data in self.graph.nodes.values()
+        )
+        no_active_faults = all(
+            not node_data["service"].active_faults
+            for node_data in self.graph.nodes.values()
+        )
+        return all_healthy and no_active_faults
+
     def step(
         self, action_idx: int
     ) -> Tuple[Dict[str, Any], float, bool, bool, Dict[str, Any]]:
@@ -358,16 +380,12 @@ class ITFaultEnv:
             reward -= 0.15
 
         # Bonus: if budget conserved and system recovered
-        if all(
-            n["service"].health > 0.85 for n in self.graph.nodes.values()
-        ):
+        if self._system_recovered():
             budget_ratio = self.budget / self.config.max_budget
             reward += 1.0 + 0.5 * budget_ratio
 
         # Check termination
-        terminated = all(
-            n["service"].health > 0.85 for n in self.graph.nodes.values()
-        )
+        terminated = self._system_recovered()
         truncated = (
             self.step_count >= self.config.max_steps or self.budget <= 0
         )

@@ -187,3 +187,14 @@ def test_different_tasks_have_different_configs() -> None:
 
         assert n_services == task_config["n_services"], \
             f"{task_id} should have {task_config['n_services']} services"
+
+
+def test_probe_does_not_immediately_terminate_episode() -> None:
+    """A pure probe should not instantly complete a freshly reset episode."""
+    for seed in range(10):
+        config = EnvConfig(task_id="task_1", seed=seed)
+        env = ITFaultEnv(config)
+        obs, info = env.reset()
+
+        obs, reward, terminated, truncated, info = env.step(0)
+        assert not terminated, f"Episode should not terminate after an initial probe for seed {seed}"

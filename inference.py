@@ -21,8 +21,8 @@ from typing import Any, Dict, List, Optional, Tuple
 import requests
 
 
-API_BASE_URL = os.getenv("API_BASE_URL", "https://api-inference.huggingface.co/v1")
-MODEL_NAME = os.getenv("MODEL_NAME", "Qwen/Qwen2.5-7B-Instruct")
+API_BASE_URL = os.getenv("API_BASE_URL", "https://router.huggingface.co/v1")
+MODEL_NAME = os.getenv("MODEL_NAME", "Qwen/Qwen2.5-7B-Instruct-Turbo")
 HF_TOKEN = os.getenv("HF_TOKEN")
 LOCAL_IMAGE_NAME = os.getenv("LOCAL_IMAGE_NAME", "")
 ENV_URL = os.getenv("ENV_URL", "http://localhost:8000")
@@ -32,7 +32,17 @@ BENCHMARK_NAME = os.getenv("BENCHMARK_NAME", "it-fault-env")
 SYSTEM_PROMPT = """You are an expert SRE diagnosing a production incident.
 
 You will receive a dashboard with service metrics, logs, alerts, and budget.
-Respond with JSON only:
+You must respond with exactly one JSON object and nothing else.
+
+Rules:
+- Do not use markdown fences.
+- Do not return an empty object.
+- action_idx must be a valid integer action index.
+- action_type must be exactly "probe" or "recovery".
+- target must exactly match one service name from the observation.
+- reasoning must be a short plain-text explanation.
+
+Respond with JSON only in this form:
 {
   "action_idx": <integer>,
   "action_type": "probe" or "recovery",
@@ -50,6 +60,11 @@ class EpisodeResult:
     steps: int
     score: float
     rewards: List[float]
+
+
+def log_debug(message: str) -> None:
+    """Write debugging information to stderr without affecting stdout contract."""
+    print(message, file=sys.stderr)
 
 
 class HTTPFaultEnv:
@@ -112,6 +127,14 @@ def format_observation(obs: Dict[str, Any]) -> str:
             f"cpu={metric.get('cpu', 0.0):.2%} mem={metric.get('memory', 0.0):.2%} "
             f"lat={metric.get('latency_ms', 0.0):.0f}ms err={metric.get('error_rate', 0.0):.4f}"
         )
+
+    service_order = list(metrics.keys())
+    lines.append("AVAILABLE ACTIONS:")
+    for index, service_name in enumerate(service_order):
+        lines.append(f"- {index}: probe {service_name}")
+    offset = len(service_order)
+    for index, service_name in enumerate(service_order):
+        lines.append(f"- {index + offset}: recovery {service_name}")
 
     alerts = obs.get("alerts", [])
     lines.append("ALERTS:")
@@ -313,7 +336,13 @@ def run_episode(
                     action_space_size=action_space_size,
                     metrics=observation.get("metrics", {}),
                 )
-            except Exception:
+                if action is None:
+                    log_debug(
+                        f"[debug] task={task_id} step={step_index} invalid_model_response="
+                        f"{content[:500]!r}"
+                    )
+            except Exception as exc:
+                log_debug(f"[debug] task={task_id} step={step_index} model_error={exc}")
                 action = None
 
             if action is None:
@@ -343,6 +372,8 @@ def run_episode(
                 break
 
         history = env.history()
+        if history is None:
+            log_debug(f"[debug] task={task_id} history_missing_for_session={env.session_id}")
         score = compute_grader_score(task_id, history)
 
         from env.tasks import TASKS
@@ -350,6 +381,9 @@ def run_episode(
         passing_score = TASKS[task_id].passing_score if task_id in TASKS else 1.0
         success = score >= passing_score
         return EpisodeResult(success=success, steps=steps, score=score, rewards=rewards)
+    except Exception as exc:
+        log_debug(f"[debug] task={task_id} fatal_error={exc}")
+        return EpisodeResult(success=False, steps=steps, score=score, rewards=rewards)
     finally:
         env.close()
 
@@ -372,20 +406,15 @@ def main() -> None:
     task_ids = ["task_1", "task_2", "task_3"] if args.all_tasks else [args.task]
 
     for index, task_id in enumerate(task_ids):
-        result = EpisodeResult(success=False, steps=0, score=0.0, rewards=[])
-        try:
-            episode_seed = None if args.seed is None else args.seed + index
-            result = run_episode(
-                task_id=task_id,
-                env_url=args.env_url,
-                model_name=args.model,
-                max_steps=args.max_steps,
-                seed=episode_seed,
-            )
-        except Exception:
-            result = EpisodeResult(success=False, steps=result.steps, score=0.0, rewards=result.rewards)
-        finally:
-            emit_end(result)
+        episode_seed = None if args.seed is None else args.seed + index
+        result = run_episode(
+            task_id=task_id,
+            env_url=args.env_url,
+            model_name=args.model,
+            max_steps=args.max_steps,
+            seed=episode_seed,
+        )
+        emit_end(result)
 
 
 if __name__ == "__main__":
