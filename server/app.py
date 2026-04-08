@@ -33,6 +33,17 @@ app = FastAPI(title="IT Fault Environment", version="1.0.0")
 _sessions: Dict[str, ITFaultEnv] = {}
 
 
+@app.get("/")
+async def root() -> Dict[str, Any]:
+    """Basic root endpoint for platform probes and browser opens."""
+    return {
+        "name": "it-fault-env",
+        "status": "ok",
+        "health_endpoint": "/health",
+        "tasks_endpoint": "/tasks",
+    }
+
+
 class ResetResponse(BaseModel):
     """Response from reset endpoint."""
 
