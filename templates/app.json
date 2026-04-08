@@ -1,0 +1,34 @@
+{
+  "bad_deploy": [
+    "ERROR {service}: deployment failed — image sha256:abc123 crashed on startup",
+    "WARN  {service}: rollback initiated after {errors:.1%} error rate post-deploy",
+    "ERROR {service}: health check failed for new revision, latency={latency}ms",
+    "CRIT  {service}: canary deployment aborted — error spike to {errors:.1%}",
+    "ERROR {service}: ConfigMap mismatch after deploy, queue={queue} requests dropped",
+    "WARN  {service}: rolling update stalled at 3/10 pods, cpu={cpu:.0%}, memory={memory:.0%}"
+  ],
+  "config_misconfiguration": [
+    "ERROR {service}: invalid configuration — DATABASE_URL not set",
+    "WARN  {service}: config reload failed, using stale configuration (queue={queue})",
+    "ERROR {service}: environment variable FEATURE_FLAG_X missing, error_rate={errors:.3f}",
+    "CRIT  {service}: configuration schema validation failed, latency={latency}ms",
+    "ERROR {service}: secrets mount unavailable, cpu={cpu:.0%} retry loop",
+    "WARN  {service}: config drift detected between replicas, memory={memory:.0%}"
+  ],
+  "dependency_timeout": [
+    "ERROR {service}: upstream {upstream} timeout after 30000ms (queue={queue})",
+    "WARN  {service}: circuit breaker half-open, dependency {upstream} slow (latency={latency}ms)",
+    "ERROR {service}: gRPC deadline exceeded for {upstream}, errors={errors:.3f}",
+    "WARN  {service}: connection pool timeout to {upstream}:443, cpu={cpu:.0%}",
+    "ERROR {service}: HTTP 504 Gateway Timeout from {upstream}, memory={memory:.0%}",
+    "CRIT  {service}: cascading timeouts from {upstream}, queue depth={queue}"
+  ],
+  "circuit_breaker_open": [
+    "WARN  {service}: circuit breaker OPEN for {upstream} — failing fast (errors={errors:.3f})",
+    "ERROR {service}: service {upstream} unavailable, circuit open for {latency}ms",
+    "WARN  {service}: fallback activated for {upstream}, queue={queue} requests redirected",
+    "ERROR {service}: Hystrix circuit tripped, error_rate={errors:.3f}, cpu={cpu:.0%}",
+    "CRIT  {service}: all circuits open for tier {upstream}, memory={memory:.0%}",
+    "WARN  {service}: resilience4j circuit breaker OPEN, failure rate {errors:.1%}"
+  ]
+}

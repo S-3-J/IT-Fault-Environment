@@ -1,0 +1,34 @@
+{
+  "memory_leak": [
+    "WARN  {service}: memory usage growing steadily ({memory:.0%}, +2%/min)",
+    "ERROR {service}: GC overhead limit exceeded — heap at {memory:.0%}, latency={latency}ms",
+    "WARN  {service}: memory leak suspected in module payment-processor, queue={queue}",
+    "ERROR {service}: OutOfMemoryError: Java heap space (used={memory:.0%}, errors={errors:.3f})",
+    "WARN  {service}: RSS memory {memory:.0%} exceeds soft limit, cpu={cpu:.0%}",
+    "CRIT  {service}: OOM killer invoked, process {service} consuming {memory:.0%} memory"
+  ],
+  "cpu_saturation": [
+    "WARN  {service}: CPU throttling detected (cpu={cpu:.0%}, latency={latency}ms)",
+    "ERROR {service}: request processing delayed, cpu saturation at {cpu:.0%}",
+    "WARN  {service}: load average 15.2 exceeds cpu count, queue depth={queue}",
+    "ERROR {service}: scheduler latency spike ({latency}ms), cpu={cpu:.0%} utilization",
+    "WARN  {service}: hot loop detected in {service}, error_rate={errors:.3f}",
+    "CRIT  {service}: CPU soft lockup detected, memory={memory:.0%}, queue={queue}"
+  ],
+  "oom_kill_loop": [
+    "CRIT  {service}: OOM killer terminated process {service} (memory={memory:.0%})",
+    "ERROR {service}: container restarting after OOM kill, restart count=3",
+    "CRIT  {service}: crash loop detected — OOM kills in last 5 minutes, errors={errors:.3f}",
+    "ERROR {service}: systemd: Out of memory: Killed process {queue} ({service})",
+    "WARN  {service}: memory cgroup limit exceeded, cpu={cpu:.0%}, latency={latency}ms",
+    "CRIT  {service}: pod in CrashLoopBackOff — OOMKilled, restarts={queue}"
+  ],
+  "thread_pool_exhaustion": [
+    "ERROR {service}: thread pool exhausted ({queue} pending, latency={latency}ms)",
+    "WARN  {service}: all worker threads busy, cpu={cpu:.0%}, error_rate={errors:.3f}",
+    "ERROR {service}: RejectedExecutionException — pool size 200, active=200, queued={queue}",
+    "WARN  {service}: Tomcat connector thread pool at capacity, memory={memory:.0%}",
+    "ERROR {service}: async handler timeout — no available threads for {latency}ms",
+    "CRIT  {service}: worker starvation detected, queue={queue}, latency={latency}ms"
+  ]
+}

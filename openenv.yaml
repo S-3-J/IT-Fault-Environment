@@ -1,0 +1,28 @@
+spec_version: 1
+name: it-fault-env
+version: "1.0.0"
+type: space
+runtime: fastapi
+app: server.app:app
+port: 8000
+description: >
+  IT Systems Fault Diagnosis and Recovery — an RL environment where an LLM
+  agent diagnoses and recovers failing microservice topologies. Based on
+  real-world SRE incident response workflows.
+tags: [openenv, fault-diagnosis, sre, it-systems, rl-training]
+tasks:
+  - id: task_1
+    name: Single Fault Isolation
+    difficulty: easy
+    passing_score: 0.70
+  - id: task_2
+    name: Cascade Containment
+    difficulty: medium
+    passing_score: 0.55
+  - id: task_3
+    name: Full Incident Response
+    difficulty: hard
+    passing_score: 0.40
+hardware: cpu-basic
+action_space: discrete
+observation_space: structured-text

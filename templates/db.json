@@ -1,0 +1,34 @@
+{
+  "connection_pool_exhausted": [
+    "ERROR {service}: upstream timeout from {db_host} (pool_size=20, waiting={queue}, timeout={latency}ms)",
+    "WARN  {service}: connection pool at {memory:.0%} capacity — {queue} requests queued for {db_host}",
+    "ERROR {service}: too many connections to {db_host} — {queue} waiting (max_pool=20)",
+    "CRIT  {service}: database connection exhausted, error_rate={errors:.3f}, dropping requests",
+    "ERROR {service}: PooledConnection.acquire() timeout after 30000ms — pool exhausted",
+    "WARN  {service}: HikariCP pool {db_host} active=20, idle=0, waiting={queue}, timeout=30s"
+  ],
+  "disk_io_saturation": [
+    "ERROR {service}: disk wait time exceeded threshold (iowait={latency}ms, threshold=100ms)",
+    "WARN  {service}: high disk queue depth on {db_host} — {queue} pending I/O operations",
+    "CRIT  {service}: disk I/O saturation detected, avg latency {latency}ms, cpu={cpu:.0%}",
+    "ERROR {service}: write-ahead log flush took {latency}ms (p99={latency}ms)",
+    "WARN  {service}: storage latency spike on volume pgdata — {memory:.0%} memory pressure",
+    "ERROR {service}: checkpoint took {latency}ms, exceeding 60s threshold"
+  ],
+  "replication_lag": [
+    "WARN  {service}: replication lag on {db_host} is {latency}ms (threshold=5000ms)",
+    "ERROR {service}: replica {db_host} falling behind, lag={latency}ms, errors={errors:.3f}",
+    "WARN  {service}: streaming replication delayed — standby {db_host} lagging by {latency}ms",
+    "ERROR {service}: read replica {db_host} not caught up, queue depth={queue}",
+    "CRIT  {service}: replication slot inactive, {db_host} disconnected for {latency}ms",
+    "WARN  {service}: WAL sender timeout on {db_host}, memory pressure {memory:.0%}"
+  ],
+  "deadlock_storm": [
+    "ERROR {service}: deadlock detected on {db_host} — transaction {queue} rolled back",
+    "CRIT  {service}: deadlock storm in progress, {queue} transactions blocked",
+    "ERROR {service}: deadlock victim selected, aborting transaction (latency={latency}ms)",
+    "WARN  {service}: lock wait timeout on table orders — {db_host} error_rate={errors:.3f}",
+    "ERROR {service}: row lock contention detected, {queue} waiting, cpu={cpu:.0%}",
+    "CRIT  {service}: cascading deadlocks detected across {db_host}, memory={memory:.0%}"
+  ]
+}

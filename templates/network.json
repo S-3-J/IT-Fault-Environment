@@ -1,0 +1,26 @@
+{
+  "packet_loss": [
+    "ERROR {service}: packet loss detected on eth0 ({errors:.1%} loss rate, latency={latency}ms)",
+    "WARN  {service}: retransmissions increasing on interface to {upstream} — queue={queue}",
+    "ERROR {service}: TCP connection reset by peer {upstream}, error_rate={errors:.3f}",
+    "WARN  {service}: network interface flapping, cpu={cpu:.0%} interrupt load",
+    "ERROR {service}: socket timeout to {upstream}:8080 after {latency}ms (queue={queue})",
+    "CRIT  {service}: link degradation detected, {errors:.1%} packet loss to gateway"
+  ],
+  "dns_resolution_failure": [
+    "ERROR {service}: DNS resolution failed for {upstream} — NXDOMAIN after {latency}ms",
+    "CRIT  {service}: DNS server unreachable (10.0.0.53:53), error_rate={errors:.3f}",
+    "ERROR {service}: getaddrinfo() timeout for {upstream} after 5000ms, queue={queue}",
+    "WARN  {service}: DNS cache miss rate high, cpu={cpu:.0%} resolver load",
+    "ERROR {service}: SERVFAIL from upstream DNS, {upstream} resolution failed",
+    "CRIT  {service}: all DNS resolvers failed, memory={memory:.0%} cache exhausted"
+  ],
+  "network_partition": [
+    "CRIT  {service}: network partition detected — cannot reach {upstream}",
+    "ERROR {service}: cluster quorum lost, {queue} nodes unreachable (latency={latency}ms)",
+    "CRIT  {service}: split-brain scenario detected, error_rate={errors:.3f}",
+    "ERROR {service}: heartbeat timeout to {upstream} — node marked as suspect",
+    "WARN  {service}: gossip protocol degraded, cpu={cpu:.0%} message processing",
+    "CRIT  {service}: consensus protocol halted, {upstream} partitioned, memory={memory:.0%}"
+  ]
+}
