@@ -394,7 +394,7 @@ def run_episode(
 def parse_args() -> argparse.Namespace:
     """Parse CLI arguments without affecting stdout contract."""
     parser = argparse.ArgumentParser(description="Run a benchmark-compatible inference episode.")
-    parser.add_argument("--task", default="task_1", help="Task ID to run")
+    parser.add_argument("--task", default=None, help="Task ID to run")
     parser.add_argument("--all-tasks", action="store_true", help="Run task_1, task_2, and task_3 sequentially")
     parser.add_argument("--env-url", default=ENV_URL, help="Environment server URL")
     parser.add_argument("--model", default=MODEL_NAME, help="Model name override")
@@ -406,7 +406,7 @@ def parse_args() -> argparse.Namespace:
 def main() -> None:
     """Script entrypoint."""
     args = parse_args()
-    task_ids = ["task_1", "task_2", "task_3"] if args.all_tasks else [args.task]
+    task_ids = ["task_1", "task_2", "task_3"] if args.all_tasks or args.task is None else [args.task]
 
     for index, task_id in enumerate(task_ids):
         episode_seed = None if args.seed is None else args.seed + index
